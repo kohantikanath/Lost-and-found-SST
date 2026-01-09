@@ -1,78 +1,52 @@
-"use client";
-import { useState, useEffect } from "react";
-import FilteredItems from "@/components/FilteredItems";
-import Modal from "@/components/ui/Modal";
-import ReportForm from "@/components/forms/ReportForm";
-import { FoundItem } from "@/types";
+import Link from "next/link";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
 
-export default function Home() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [items, setItems] = useState<FoundItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  async function fetchItems() {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/items`, {
-        cache: "no-store",
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setItems(data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch items:", error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    fetchItems();
-  }, []);
-
-  const handleReportSuccess = () => {
-    setIsModalOpen(false);
-    fetchItems(); // Refresh items after successful report
-  };
-
-  if (loading) {
-    return (
-      <main className="p-6 bg-[#0f111a] min-h-screen flex items-center justify-center">
-        <p className="text-gray-400">Loading...</p>
-      </main>
-    );
-  }
-
+export default function LandingPage() {
   return (
-    <main className="p-6 bg-[#0f111a] min-h-screen pb-24">
-      <header className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-white text-2xl font-black tracking-tight">
-            Campus Found Items
-          </h1>
-          <p className="text-gray-500 text-sm">Centralized Lost & Found Hub</p>
+    <div className="min-h-screen bg-[#0f111a] flex flex-col items-center justify-center text-center p-6">
+      {/* Background Glow Decor */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-64 bg-[#f06524]/10 blur-[120px] pointer-events-none" />
+
+      <div className="w-20 h-20 bg-[#f06524] rounded-3xl mb-8 flex items-center justify-center text-4xl shadow-2xl shadow-[#f06524]/30">
+        🔍
+      </div>
+
+      <h1 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter leading-none">
+        {`Find What's `} <span className="text-[#f06524]">Lost.</span>
+        <br />
+        {`Return What's `} <span className="text-[#7c3aed]">Found.</span>
+      </h1>
+
+      <p className="text-gray-400 max-w-lg mb-12 text-lg font-medium leading-relaxed">
+        The official campus hub for misplaced belongings. Seamlessly connect
+        with owners and secure your items.
+      </p>
+
+      <SignedOut>
+        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
+          <Link
+            href="/sign-in"
+            className="flex-1 bg-[#f06524] text-white px-8 py-4 rounded-2xl font-black text-lg hover:scale-105 transition-all text-center"
+          >
+            Sign In
+          </Link>
+          <Link
+            href="/sign-up"
+            className="flex-1 bg-[#161926] border border-gray-800 text-white px-8 py-4 rounded-2xl font-black text-lg hover:bg-gray-800 transition-all text-center"
+          >
+            Register
+          </Link>
         </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-[#f06524] px-5 py-2.5 rounded-xl text-white text-sm font-bold hover:scale-105 transition-transform shadow-lg shadow-[#f06524]/20"
+      </SignedOut>
+
+      <SignedIn>
+        <Link
+          href="/items"
+          className="bg-white text-black px-12 py-4 rounded-2xl font-black text-lg hover:scale-105 transition-all flex items-center gap-2"
         >
-          + Report
-        </button>
-      </header>
-
-      {/* The Pop-up Form */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Report Found Item"
-      >
-        <ReportForm onSuccess={handleReportSuccess} />
-      </Modal>
-
-      <FilteredItems
-        initialItems={items}
-        onReportClick={() => setIsModalOpen(true)}
-      />
-    </main>
+          Open Dashboard <span>→</span>
+        </Link>
+      </SignedIn>
+    </div>
   );
 }

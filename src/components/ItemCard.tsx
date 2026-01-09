@@ -34,9 +34,14 @@ export default function ItemCard({ item }: ItemCardProps) {
         {/* Content */}
         <div className="p-4">
           <div className="flex justify-between items-start mb-3">
-            <h3 className="text-lg font-bold text-white truncate pr-2 tracking-tight">
-              {item.itemName}
-            </h3>
+            <div className="flex flex-col gap-2">
+              <h3 className="text-lg font-bold text-white truncate pr-2 tracking-tight">
+                {item.itemName}
+              </h3>
+              <span className="text-xs text-gray-400">
+                Reported by: {item.reportedBy}
+              </span>
+            </div>
           </div>
 
           <div className="flex flex-col gap-3">

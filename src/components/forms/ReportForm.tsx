@@ -1,11 +1,14 @@
 "use client";
 import { useState } from "react";
+import { useUser, useAuth } from "@clerk/nextjs";
 
 interface ReportFormProps {
   onSuccess: () => void;
 }
 
 export default function ReportForm({ onSuccess }: ReportFormProps) {
+  const { user } = useUser();
+  const { getToken } = useAuth();
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -31,15 +34,22 @@ export default function ReportForm({ onSuccess }: ReportFormProps) {
       if (!fileData.secure_url) throw new Error("Image upload failed");
 
       // 2. Save Data to MongoDB via our API
+      const token = await getToken();
       const response = await fetch("/api/items", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           itemName: formData.get("itemName"),
+          itemType: formData.get("itemType"),
           category: formData.get("category"),
           locationKept: formData.get("locationKept"),
           foundDate: new Date().toISOString(),
           imageUrl: fileData.secure_url,
+          reportedBy: user?.fullName,
+          reportedByEmail: user?.primaryEmailAddress?.emailAddress,
         }),
       });
 
@@ -56,6 +66,33 @@ export default function ReportForm({ onSuccess }: ReportFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Item Type */}
+      <div>
+        <label className="block text-sm mb-1 text-gray-300">Report Type *</label>
+        <div className="flex gap-4">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="itemType"
+              value="lost"
+              required
+              className="w-4 h-4"
+            />
+            <span className="text-white">Lost Item</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="itemType"
+              value="found"
+              required
+              className="w-4 h-4"
+            />
+            <span className="text-white">Found Item</span>
+          </label>
+        </div>
+      </div>
+
       {/* Item Name */}
       <div>
         <label className="block text-sm mb-1 text-gray-300">Item Name *</label>

@@ -19,6 +19,7 @@ export type HandoverLocation =
 export interface FoundItem {
   _id?: string;
   itemName: string;
+  itemType: "lost" | "found";
   category: Category;
   imageUrl: string;
   locationKept: HandoverLocation;
@@ -26,5 +27,7 @@ export interface FoundItem {
   description?: string;
   contactInfo?: string;
   status: "available" | "claimed";
+  reportedBy: string;
+  reportedByEmail: string;
   createdAt: string;
 }

@@ -3,6 +3,11 @@ import mongoose, { Schema, model, models } from "mongoose";
 const FoundItemSchema = new Schema(
   {
     itemName: { type: String, required: true },
+    itemType: {
+      type: String,
+      required: true,
+      enum: ["lost", "found"],
+    },
     category: {
       type: String,
       required: true,
@@ -35,6 +40,15 @@ const FoundItemSchema = new Schema(
       type: String,
       default: "available",
       enum: ["available", "claimed"],
+    },
+    reportedBy: { type: String, required: true }, // User's Name
+    reportedByEmail: { type: String, required: true },
+    isCollected: { type: Boolean, default: false },
+    collectedBy: {
+      name: String,
+      email: String,
+      contact: String,
+      date: Date,
     },
   },
   {
